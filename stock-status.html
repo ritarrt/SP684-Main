@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Status</title>
+  <!-- TailwindCSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-white">
+  <!-- Top Bar -->
+  <header class="w-full h-16 bg-stone-900 flex items-center px-4">
+    <div class="flex items-center gap-6">
+      <img src="img/TangnamLogo.png" alt="Logo" class="h-11" />
+      <nav class="flex items-center gap-8 text-xs text-white">
+        <a href="stock-status.html" class="font-bold">STOCK STATUS - AP</a>
+        <a href="lead-time-supplier.html">Replenishment Cycle </a>
+        <span>Stock Item Property</span>
+        <span>New SKU Request</span>
+        <a href="Item_Movement.html">ITEM MOVEMENT</a>
+      </nav>
+    </div>
+    <div class="ml-auto text-stone-400 text-xl font-bold">Name</div>
+  </header>
+
+  <!-- Page Content -->
+  <main class="mx-auto max-w-none px-4">
+    <!-- Title -->
+    <div class="mt-8">
+      <h1 class="text-3xl font-bold text-black">STOCK STATUS - AP </h1>
+    </div>
+
+    <!-- Filters / Search Bar -->
+    <section class="mt-6">
+      <div class="border border-black h-14 w-full flex items-center px-3 gap-2">
+        <span class="text-base">Filters</span>
+        <img src="img/filter.png" alt="filter" class="h-4 w-4" />
+
+        <!-- Single date (แทน Month picker เดิม) -->
+        <div class="flex items-center gap-2">
+          <label for="singleDate" class="text-xs text-stone-700">Date</label>
+          <input id="singleDate" type="date"
+                 class="h-9 min-w-[160px] rounded border border-zinc-400 px-2 text-sm bg-white" />
+          <button id="dateApply"
+                  class="h-9 px-3 rounded bg-black text-white text-xs">Apply</button>
+          <button id="dateReset"
+                  class="h-9 px-3 rounded border text-xs">Reset</button>
+        </div>
+
+        <!-- Filter chips host -->
+        <div id="filterChips" class="flex items-center gap-2"></div>
+
+        <!-- Search box (ขวาสุด) -->
+        <div class="ml-auto w-56 h-9 rounded border border-zinc-400 flex items-center px-2">
+          <input id="searchInput" type="text" class="w-full h-full outline-none text-xs placeholder:text-stone-900/60"
+            placeholder="Search by Keyword....." />
+        </div>
+      </div>
+    </section>
+
+    <!-- Table -->
+    <section class="mt-6 max-h-[58vh] overflow-auto">
+      <table class="table-fixed min-w-full border border-stone-300 text-sm text-left">
+        <thead>
+          <tr>
+            <th type="button" class="px-5 py-6 border" data-sort-key="branchCode">
+              Branch Code
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+              <button type="button" class="filter-btn-branch icon-btn ml-1" aria-label="filter branch">
+                <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+              </button>
+            </th>
+
+            <th class="px-3 py-5 border" data-sort-key="skuNumber">
+              SKU Number
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+              <button type="button" class="filter-btn-sku icon-btn ml-1" aria-label="filter sku">
+                <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+              </button>
+            </th>
+
+            
+<th class="px-3 py-2 border" data-sort-key="brandName">
+  Brand
+  <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+  <button type="button" class="filter-btn-brand icon-btn ml-1" aria-label="filter brand">
+    <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+  </button>
+</th>
+
+<th class="px-3 py-2 border" data-sort-key="accGroupName">
+  Group
+  <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+  <button type="button" class="filter-btn-group icon-btn ml-1" aria-label="filter group">
+    <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+  </button>
+</th>
+
+
+
+
+            <th class="px-3 py-2 border" data-sort-key="productName">
+              Product Name
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="averageDemand">
+              Average Demand
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="safetyStock">
+              Safety Stock
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="trend">
+              Trend
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="min">
+              Min
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="onHandQty">
+              OnHand-QTY
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="backlog">
+              BackOrder
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+            </th>
+            <th class="px-3 py-2 border" data-sort-key="turnOver">
+              TurnOver
+              <button type="button" class="sort-btn" aria-label="sort"><span class="chev">↑↓</span></button>
+              <button type="button" class="filter-btn-turnover icon-btn ml-1" aria-label="filter turnover">
+                <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+              </button>
+            </th>
+
+            <th class="px-3 py-2 border" data-sort-key="status">
+              Status
+              <button type="button" class="filter-btn icon-btn ml-1" aria-label="filter status">
+                <img src="img/filter.png" alt="" class="h-3 w-3 opacity-70 hover:opacity-100">
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+
+    <!-- ========= Core scripts ========= -->
+    <script>
+      const tableBody = document.getElementById("tableBody");
+      const searchInput = document.getElementById("searchInput");
+
+      let fullRows = [];
+      let filtered = [];
+
+      // === state ของการ sort ===
+      let currentSortBy = "branchCode"; // ค่าเริ่มต้น
+      let currentOrder = "asc";
+
+      let _didResetFiltersOnce = false;
+
+      async function loadStockStatus() {
+        try {
+          // รีเซ็ตฟิลเตอร์ครั้งเดียวตอนเปิดหน้า (กันฟิลเตอร์ค้าง)
+          if (!_didResetFiltersOnce) {
+            FilterState.status.clear();
+            FilterState.skuCat.clear();
+            FilterState.branches.clear();
+            FilterState.brands.clear();
+            FilterState.turnoverRange = { min: null, max: null };
+            FilterState.singleDate = null;
+            
+            if (searchInput) searchInput.value = "";
+            _didResetFiltersOnce = true;
+          }
+
+          const url = `/api/stock-status?months=6`
+            + `&sortBy=${encodeURIComponent(currentSortBy)}`
+            + `&order=${encodeURIComponent(currentOrder)}`
+            + `&ts=${Date.now()}`;
+
+          const res = await fetch(url, { cache: "no-store" });
+          const data = await res.json();
+
+          fullRows = Array.isArray(data.rows) ? data.rows : [];
+
+          // ถ้ามีฟิลเตอร์ที่ผู้ใช้ตั้งอยู่ ค่อยกรอง ไม่งั้นโชว์ทั้งหมด
+          if (FilterState.status.size || FilterState.skuCat.size || FilterState.branches.size  || FilterState.brands.size
+              || (FilterState.turnoverRange && (FilterState.turnoverRange.min !== null || FilterState.turnoverRange.max !== null))
+              || FilterState.singleDate) {
+            applyFilters();
+          } else {
+            filtered = fullRows.slice();
+            page = 1;  // เริ่มหน้าแรก
+            render();
+          }
+
+          updateSortIcons();
+        } catch (err) {
+          console.error("Failed to load /api/stock-status", err);
+          if (tableBody) {
+            tableBody.innerHTML = `
+              <tr><td colspan="12" class="px-3 py-2 border text-red-600">
+                ไม่สามารถโหลดข้อมูลได้ (ตรวจสอบว่า server ทำงานและเชื่อม DB ได้)
+              </td></tr>`;
+          }
+          const ste = document.getElementById("statusText");
+          if (ste) ste.textContent = "Error loading data";
+        }
+      }
+
+      // ผูกคลิกไอคอนบนหัวคอลัมน์ (ประกาศนอก loadStockStatus)
+      function initHeaderSort() {
+        const thead = document.querySelector("thead");
+        if (!thead) return;
+
+        thead.addEventListener("click", (e) => {
+          const btn = e.target.closest(".sort-btn");
+          const th = e.target.closest("th[data-sort-key]");
+          if (!btn || !th) return;
+
+          const key = th.dataset.sortKey;
+
+          if (currentSortBy === key) {
+            currentOrder = (currentOrder === "asc") ? "desc" : "asc";
+          } else {
+            currentSortBy = key;
+            currentOrder = "asc";
+          }
+          loadStockStatus();
+        });
+      }
+
+      // เปลี่ยนลูกศรบนไอคอนให้ตรงกับสถานะ
+      function updateSortIcons() {
+        document.querySelectorAll("thead th[data-sort-key] .sort-btn").forEach(btn => {
+          const th = btn.closest("th");
+          const key = th.getAttribute("data-sort-key");
+          btn.classList.toggle("active", key === currentSortBy);
+          const chev = btn.querySelector(".chev");
+          if (!chev) return;
+          chev.classList.remove("asc", "desc");
+          if (key === currentSortBy) {
+            chev.classList.add(currentOrder === "desc" ? "desc" : "asc");
+          }
+        });
+      }
+
+      function statusCell(s) {
+        const n = String(s || "").trim();
+        if (n === "น้อยเกินไป" || n === "น้อยเกิน") {
+          return `<td class="px-3 py-2 border text-center whitespace-nowrap bg-red-500 text-white font-bold">${n}</td>`;
+        }
+        if (n === "มากเกินไป") {
+          return `<td class="px-3 py-2 border text-center whitespace-nowrap bg-yellow-300 text-black font-bold">${n}</td>`;
+        }
+        return `<td class="px-3 py-2 border text-center whitespace-nowrap">${n}</td>`;
+      }
+
+      let page = 1;
+      const pageSize = 26;
+
+      function pagedRows() {
+        const start = (page - 1) * pageSize;
+        return filtered.slice(start, start + pageSize);
+      }
+
+      function render() {
+        if (!tableBody) return;
+        tableBody.innerHTML = "";
+
+        if (!filtered || filtered.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="12" class="px-3 py-2 border text-stone-500">No data</td></tr>`;
+          const st0 = document.getElementById("statusText");
+          if (st0) st0.textContent = "Showing 0";
+          return;
+        }
+
+const rows = pagedRows();
+const startIndex = (page - 1) * pageSize;
+
+        rows.forEach((r, i) => {
+          const idx = startIndex + i;
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-stone-50";
+          tr.innerHTML = `
+            <td class="px-3 py-2 border">${r.branchCode ?? ""}</td>
+            <td class="px-3 py-2 border">${r.skuNumber ?? ""}</td>
+            <td class="px-3 py-2 border">${(r.brandName && String(r.brandName).trim()) || "-"}</td>
+            <td class="px-3 py-2 border">${(r.accGroupName && String(r.accGroupName).trim()) || "-"}</td>
+            <td class="px-3 py-2 border break-words">${r.productName ?? ""}</td>
+            <td class="px-3 py-2 border text-center">
+              <button class="avg-pop underline text-blue-600" data-idx="${idx}">
+                ${r.averageDemand ?? 0}
+              </button>
+            </td>
+            <td class="px-3 py-2 border text-center">${r.safetyStock ?? ""}</td>
+            <td class="px-3 py-2 border text-center">${r.trend ?? ""}</td>
+            <td class="px-3 py-2 border text-center">${r.minQty ?? ""}</td>
+            <td class="px-3 py-2 border text-center">${r.onHandQty ?? ""}</td>
+            <td class="px-3 py-2 border text-center">${r.backlog ?? 0}</td>
+            <td class="px-3 py-2 border text-center">${r.turnOver ?? ""}</td>
+            ${statusCell(r.status ?? "")}
+          `;
+          tableBody.appendChild(tr);
+        });
+
+        const st = document.getElementById("statusText");
+        if (st) {
+          const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+          st.textContent = `Page ${page} of ${totalPages} (Showing ${rows.length} of ${filtered.length})`;
+        }
+
+        renderPager();
+        bindPagerButtons();
+      }
+
+      // ค้นหา (client)
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          const q = e.target.value.trim().toLowerCase();
+          filtered = fullRows.filter(r =>
+            (r.branchCode || "").toLowerCase().includes(q) ||
+            (r.skuNumber || "").toLowerCase().includes(q) ||
+            (r.productName || "").toLowerCase().includes(q) ||
+            (r.brandName   || "").toLowerCase().includes(q) ||
+            (r.accGroupName || "").toLowerCase().includes(q)
+          );
+          page = 1;
+          render();
+        });
+      }
+ 
+      // ผูก sort และโหลดครั้งแรกเมื่อ DOM พร้อม
+      document.addEventListener("DOMContentLoaded", () => {
+        initHeaderSort();
+        loadStockStatus();
+      });
+    </script>
+
+
+    <!-- ========= Pager ========= -->
+    <script>
+      function renderPager() {
+        const container = document.getElementById("pageButtons");
+        if (!container) return;
+        container.innerHTML = "";
+
+        const tp = Math.max(1, Math.ceil((filtered?.length || 0) / pageSize));
+
+        // แสดงหน้ารอบ ๆ ปัจจุบัน (window 5 ปุ่ม)
+        const windowSize = 5;
+        let start = Math.max(1, page - Math.floor(windowSize / 2));
+        let end = Math.min(tp, start + windowSize - 1);
+        if (end - start + 1 < windowSize) start = Math.max(1, end - windowSize + 1);
+
+        if (start > 1) container.appendChild(makePageBtn(1));
+        if (start > 2) container.appendChild(makeDots());
+
+        for (let p = start; p <= end; p++) {
+          container.appendChild(makePageBtn(p, p === page));
+        }
+
+        if (end < tp - 1) container.appendChild(makeDots());
+        if (end < tp) container.appendChild(makePageBtn(tp));
+
+        // ตั้ง disabled ของ Prev/Next
+        const prev = document.getElementById("prevBtn");
+        const next = document.getElementById("nextBtn");
+        if (prev) prev.disabled = page <= 1;
+        if (next) next.disabled = page >= tp;
+      }
+
+      function makePageBtn(p, active = false) {
+        const btn = document.createElement("button");
+        btn.className = `rounded px-3 py-1.5 text-xs ${active ? "bg-black text-white" : "bg-zinc-300 text-black"}`;
+        btn.textContent = p;
+        btn.onclick = () => { page = p; render(); };
+        return btn;
+      }
+
+      function makeDots() {
+        const b = document.createElement("button");
+        b.className = "bg-zinc-300 rounded px-3 py-1.5 text-xs";
+        b.textContent = "...";
+        b.disabled = true;
+        return b;
+      }
+
+      function bindPagerButtons() {
+        const tp = Math.max(1, Math.ceil((filtered?.length || 0) / pageSize));
+        const prev = document.getElementById("prevBtn");
+        const next = document.getElementById("nextBtn");
+        const goBtn = document.getElementById("goBtn");
+        const goInput = document.getElementById("goInput");
+
+        if (prev) {
+          prev.disabled = page <= 1;
+          prev.onclick = () => { if (page > 1) { page--; render(); } };
+        }
+        if (next) {
+          next.disabled = page >= tp;
+          next.onclick = () => { if (page < tp) { page++; render(); } };
+        }
+        if (goBtn && goInput) {
+          goBtn.onclick = () => {
+            const v = parseInt(goInput.value || "1", 10);
+            if (Number.isFinite(v)) {
+              page = Math.min(Math.max(1, v), tp);
+              render();
+            }
+          };
+        }
+      }
+    </script>
+
+    <!-- ========= Filters (Status / SKU / Branch / TurnOver / Single Date) ========= -->
+    <script>
+      /** ---------- FILTER STATE ---------- **/
+      const FilterState = {
+        status: new Set(),                 // "สั่งซื้อ" | "ไม่ต้องสั่งซื้อ" | "มากเกินไป"
+        skuCat: new Set(),                 // Glass/Aluminium/Sealant/C-Line/Gypsum/Accessory
+        branches: new Set(),               // Branch codes
+        brands: new Set(),                  // Brand names
+        groups: new Set(),                  // Group names
+        turnoverRange: { min: null, max: null }, // TurnOver range
+        singleDate: null,                   // เลือกวันเดียว (Date object หรือ null)
+      };
+
+      // === Fixed branch options (ไม่อิง fullRows) ===
+      const BRANCH_OPTIONS = [
+        "00TR","01TJ","02TN","03TS","04TP","05AY","06RY","07RB","08NR","09UB",
+        "10KK","11PL","12CM","13SR","14HY","15CB","16PK","17CR","18UD","19PC",
+        "20SK","21BS","22BP","23NS","24TL","25SB"
+      ];
+
+      // ใช้ตัวอักษรตัวแรกของ skuNumber หลัง trim แล้ว map เป็นหมวด
+      function getSkuCategoryFromSkuNumber(sku) {
+        const ch = String(sku || "").trim().charAt(0).toUpperCase();
+        const map = { G: "Glass", A: "Aluminium", S: "Sealant", C: "C-Line", Y: "Gypsum", E: "Accessory" };
+        return map[ch] || null;
+      }
+
+      // แปลงวันที่ของแถวเพื่อใช้เทียบ
+      // คืนค่า: { type: 'full'|'month'|null, date: Date|null, ym: 'YYYY-MM'|null }
+      function parseRowDate(r) {
+        const d1 = String(r.docDate || "").trim();              // คาดหวัง 'YYYY-MM-DD'
+        const ym = String(r.docMonth || r.month || "").trim();  // คาดหวัง 'YYYY-MM'
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(d1)) {
+          const dt = new Date(d1 + "T00:00:00");
+          if (Number.isFinite(dt.getTime())) return { type: 'full', date: dt, ym: d1.slice(0,7) };
+        }
+        if (/^\d{4}-\d{2}$/.test(ym)) {
+          const dt = new Date(ym + "-01T00:00:00");
+          if (Number.isFinite(dt.getTime())) return { type: 'month', date: dt, ym };
+        }
+        return { type: null, date: null, ym: null };
+      }
+
+      /** ---------- APPLY FILTER ---------- **/
+      function applyFilters() {
+        filtered = fullRows.filter(r => {
+          // Status
+          if (FilterState.status.size > 0 && !FilterState.status.has(String(r.status || "").trim())) return false;
+
+          // SKU Category
+          if (FilterState.skuCat.size > 0) {
+            const cat = getSkuCategoryFromSkuNumber(r.skuNumber);
+            if (!FilterState.skuCat.has(cat)) return false;
+          }
+
+          // Branch Code
+          if (FilterState.branches.size > 0) {
+            const bc = String(r.branchCode || "").trim();
+            if (!FilterState.branches.has(bc)) return false;
+          }
+
+          // Brand (dynamic)
+if (FilterState.brands.size > 0) {
+  const bn = (r.brandName ?? "").toString().trim();
+  if (!FilterState.brands.has(bn)) return false;
+}
+
+
+// Group (dynamic)
+if (FilterState.groups.size > 0) {
+  const gn = (r.accGroupName ?? "").toString().trim();
+  if (!FilterState.groups.has(gn)) return false;
+}
+
+
+          // TurnOver range
+          const { min, max } = FilterState.turnoverRange || {};
+          if (min !== null || max !== null) {
+            const v = Number(r.turnOver);
+            if (!Number.isFinite(v)) return false;      // ถ้าไม่ใช่ตัวเลขให้คัดออกเมื่อมีการตั้งช่วง
+            if (min !== null && v < min) return false;
+            if (max !== null && v > max) return false;
+          }
+
+          // Single date (ถ้ามีตั้งค่า)
+          if (FilterState.singleDate) {
+            const rd = parseRowDate(r);
+            if (!rd.type) return false;
+
+            if (rd.type === 'full') {
+              const a = rd.date, b = FilterState.singleDate;
+              const sameDay = a.getFullYear() === b.getFullYear()
+                           && a.getMonth() === b.getMonth()
+                           && a.getDate() === b.getDate();
+              if (!sameDay) return false;
+            } else if (rd.type === 'month') {
+              // ถ้าแถวเป็นระดับเดือน ให้ผ่านเมื่อเดือน-ปีตรงกับวันเลือก
+              const ymSel = `${FilterState.singleDate.getFullYear()}-${String(FilterState.singleDate.getMonth()+1).padStart(2,'0')}`;
+              if (rd.ym !== ymSel) return false;
+            }
+          }
+
+          return true;
+        });
+
+        page = 1;
+        render();
+        renderFilterChips();
+      }
+
+      /** ---------- CHIPS (บนแถบ Filters) ---------- **/
+      function renderFilterChips() {
+        const host = document.getElementById("filterChips");
+        if (!host) return;
+        host.innerHTML = "";
+
+        const list = [];
+        if (FilterState.status.size)   list.push({ key: "status",   label: "Status", values: Array.from(FilterState.status) });
+        if (FilterState.skuCat.size)   list.push({ key: "skuCat",   label: "SKU",    values: Array.from(FilterState.skuCat) });
+        if (FilterState.branches.size) list.push({ key: "branches", label: "Branch", values: Array.from(FilterState.branches) });
+        if (FilterState.brands.size) {list.push({ key: "brands", label: "Brand", values: Array.from(FilterState.brands) });}
+        if (FilterState.groups.size) {list.push({ key: "groups", label: "Group", values: Array.from(FilterState.groups) });}
+
+        const tr = FilterState.turnoverRange || {};
+        if (tr.min !== null || tr.max !== null) {
+          const label = (tr.min !== null && tr.max !== null)
+            ? `${tr.min} – ${tr.max}`
+            : (tr.min !== null ? `≥ ${tr.min}` : `≤ ${tr.max}`);
+          list.push({ key: "turnOver", label: "TurnOver", values: [label] });
+        }
+        // Single date chip
+        if (FilterState.singleDate) {
+          const label = FilterState.singleDate.toISOString().slice(0,10);
+          list.push({ key: "singleDate", label: "Date", values: [label] });
+        }
+
+        if (list.length === 0) return;
+
+        for (const f of list) {
+          for (const v of f.values) {
+            const chip = document.createElement("button");
+            chip.className = "text-xs bg-stone-200 rounded-full px-2 py-0.5 flex items-center gap-1";
+            chip.innerHTML = `<span>${f.label}: ${v}</span><span class="ml-1">✕</span>`;
+            chip.onclick = () => {
+              if (f.key === "status")      FilterState.status.delete(v);
+              if (f.key === "skuCat")      FilterState.skuCat.delete(v);
+              if (f.key === "branches")    FilterState.branches.delete(v);
+              if (f.key === "turnOver")    FilterState.turnoverRange = { min: null, max: null };
+              if (f.key === "singleDate")  FilterState.singleDate = null;
+              if (f.key === "brands") FilterState.brands.delete(v);
+              if (f.key === "groups") FilterState.groups.delete(v);
+
+
+              applyFilters();
+            };
+            host.appendChild(chip);
+          }
+        }
+
+        // ปุ่ม Clear all
+        const clearAll = document.createElement("button");
+        clearAll.className = "text-xs underline ml-2";
+        clearAll.textContent = "Clear all";
+        clearAll.onclick = () => {
+          FilterState.status.clear();
+          FilterState.skuCat.clear();
+          FilterState.branches.clear();
+          FilterState.brands.clear();
+          FilterState.turnoverRange = { min: null, max: null };
+          FilterState.singleDate = null;
+          FilterState.groups.clear();
+          applyFilters();
+        };
+        host.appendChild(clearAll);
+      }
+
+      /** ---------- SKU popover ---------- **/
+      let skuPop = null;
+      function openSkuFilter(anchorBtn) {
+        if (!skuPop) {
+          skuPop = document.createElement("div");
+          skuPop.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+          skuPop.style.minWidth = "180px";
+          document.body.appendChild(skuPop);
+        }
+
+        const options = ["Glass", "Aluminium", "Sealant", "C-Line", "Gypsum", "Accessory"];
+        const selected = new Set(FilterState.skuCat);
+
+        skuPop.innerHTML = `
+          <div class="space-y-2">
+            ${options.map(opt => `
+              <label class="flex items-center gap-2">
+                <input type="checkbox" value="${opt}" ${selected.has(opt) ? "checked" : ""}/>
+                <span>${opt}</span>
+              </label>
+            `).join("")}
+            <div class="flex justify-end gap-2 pt-2">
+              <button id="skuCancel" class="px-2 py-1 rounded border">Cancel</button>
+              <button id="skuApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+            </div>
+          </div>
+        `;
+
+        // วางชิดซ้ายของปุ่ม
+        skuPop.style.visibility = "hidden";
+        skuPop.style.display = "block";
+        const rect = anchorBtn.getBoundingClientRect();
+        const popW = skuPop.offsetWidth, popH = skuPop.offsetHeight, pad = 8;
+        let left = rect.right + window.scrollX - popW;
+        let top = rect.bottom + window.scrollY + 6;
+        left = Math.max(window.scrollX + pad, Math.min(left, window.scrollX + window.innerWidth - popW - pad));
+        top = Math.min(top, window.scrollY + window.innerHeight - popH - pad);
+        skuPop.style.left = `${left}px`;
+        skuPop.style.top = `${top}px`;
+        skuPop.style.visibility = "visible";
+
+        const close = (e) => {
+          if (!skuPop.contains(e.target) && e.target !== anchorBtn) {
+            skuPop.style.display = "none";
+            document.removeEventListener("click", close, true);
+            anchorBtn.classList.remove("is-open");
+          }
+        };
+        setTimeout(() => document.addEventListener("click", close, true), 0);
+
+        skuPop.querySelector("#skuCancel").onclick = () => { skuPop.style.display = "none"; };
+        skuPop.querySelector("#skuApply").onclick = () => {
+          const checks = skuPop.querySelectorAll('input[type="checkbox"]');
+          FilterState.skuCat.clear();
+          checks.forEach(ch => { if (ch.checked) FilterState.skuCat.add(ch.value); });
+          skuPop.style.display = "none";
+          applyFilters();
+        };
+      }
+
+      /** ---------- Branch popover (fixed list) ---------- **/
+  let branchPop = null;
+  function openBranchFilter(anchorBtn) {
+    if (!branchPop) {
+      branchPop = document.createElement("div");
+      branchPop.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+      branchPop.style.minWidth = "180px";
+      document.body.appendChild(branchPop);
+    }
+
+    const options  = BRANCH_OPTIONS.slice();
+    const selected = new Set(FilterState.branches);
+
+    branchPop.innerHTML = `
+      <div class="max-h-80 overflow-auto space-y-2">
+        ${options.map(opt => `
+          <label class="flex items-center gap-2">
+            <input type="checkbox" value="${opt}" ${selected.has(opt) ? "checked" : ""}/>
+            <span>${opt}</span>
+          </label>
+        `).join("")}
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="branchCancel" class="px-2 py-1 rounded border">Cancel</button>
+          <button id="branchApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+        </div>
+      </div>
+    `;
+
+    // วาง popover ใต้ปุ่ม
+    branchPop.style.visibility = "hidden";
+    branchPop.style.display = "block";
+    const rect = anchorBtn.getBoundingClientRect();
+    const popW = branchPop.offsetWidth, popH = branchPop.offsetHeight, pad = 8;
+    let left = rect.right + window.scrollX - popW;
+    let top  = rect.bottom + window.scrollY + 6;
+    left = Math.max(window.scrollX + pad, Math.min(left, window.scrollX + window.innerWidth - popW - pad));
+    top  = Math.min(top,  window.scrollY + window.innerHeight - popH - pad);
+    branchPop.style.left = `${left}px`;
+    branchPop.style.top  = `${top}px`;
+    branchPop.style.visibility = "visible";
+
+    const close = (e) => {
+      if (!branchPop.contains(e.target) && e.target !== anchorBtn) {
+        branchPop.style.display = "none";
+        document.removeEventListener("click", close, true);
+        anchorBtn.classList.remove("is-open");
+      }
+    };
+    setTimeout(() => document.addEventListener("click", close, true), 0);
+
+    branchPop.querySelector("#branchCancel").onclick = () => { branchPop.style.display = "none"; };
+    branchPop.querySelector("#branchApply").onclick = () => {
+      const checks = branchPop.querySelectorAll('input[type="checkbox"]');
+      FilterState.branches.clear();
+      checks.forEach(ch => { if (ch.checked) FilterState.branches.add(ch.value); });
+      branchPop.style.display = "none";
+      applyFilters();
+    };
+  }
+
+  /** ---------- Brand popover (dynamic from fullRows) ---------- **/
+  let brandPop = null;
+  function openBrandFilter(anchorBtn) {
+    if (!brandPop) {
+      brandPop = document.createElement("div");
+      brandPop.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+      brandPop.style.minWidth = "220px";
+      document.body.appendChild(brandPop);
+    }
+
+    const options = Array.from(new Set((fullRows || [])
+      .map(r => (r.brandName ?? "").toString().trim())
+      .filter(s => s.length > 0)))
+      .sort((a,b) => a.localeCompare(b, 'th', {sensitivity:'base'}));
+
+    const selected = new Set(FilterState.brands);
+
+    brandPop.innerHTML = `
+      <div class="max-h-80 overflow-auto space-y-2">
+        ${ options.length ? options.map(opt => `
+            <label class="flex items-center gap-2">
+              <input type="checkbox" value="${opt}" ${selected.has(opt) ? "checked" : ""}/>
+              <span>${opt}</span>
+            </label>
+          `).join("") : `<div class="text-stone-500">No brands</div>` }
+        <div class="flex justify-end gap-2 pt-2">
+          <button id="brandCancel" class="px-2 py-1 rounded border">Cancel</button>
+          <button id="brandApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+        </div>
+      </div>
+    `;
+
+    brandPop.style.visibility = "hidden";
+    brandPop.style.display = "block";
+    const rect = anchorBtn.getBoundingClientRect();
+    const popW = brandPop.offsetWidth, popH = brandPop.offsetHeight, pad = 8;
+    let left = rect.right + window.scrollX - popW;
+    let top  = rect.bottom + window.scrollY + 6;
+    left = Math.max(window.scrollX + pad, Math.min(left, window.scrollX + window.innerWidth - popW - pad));
+    top  = Math.min(top,  window.scrollY + window.innerHeight - popH - pad);
+    brandPop.style.left = `${left}px`;
+    brandPop.style.top  = `${top}px`;
+    brandPop.style.visibility = "visible";
+
+    const close = (e) => {
+      if (!brandPop.contains(e.target) && e.target !== anchorBtn) {
+        brandPop.style.display = "none";
+        document.removeEventListener("click", close, true);
+        anchorBtn.classList.remove("is-open");
+      }
+    };
+    setTimeout(() => document.addEventListener("click", close, true), 0);
+
+    brandPop.querySelector("#brandCancel").onclick = () => { brandPop.style.display = "none"; };
+    brandPop.querySelector("#brandApply").onclick = () => {
+      const checks = brandPop.querySelectorAll('input[type="checkbox"]');
+      FilterState.brands.clear();
+      checks.forEach(ch => { if (ch.checked) FilterState.brands.add(ch.value); });
+      brandPop.style.display = "none";
+      applyFilters();
+    };
+  }
+
+  /** ---------- Group popover (dynamic) ---------- **/
+let groupPop = null;
+function openGroupFilter(anchorBtn) {
+  if (!groupPop) {
+    groupPop = document.createElement("div");
+    groupPop.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+    groupPop.style.minWidth = "220px";
+    document.body.appendChild(groupPop);
+  }
+
+  const options = Array.from(new Set((fullRows || [])
+    .map(r => (r.accGroupName ?? "").toString().trim())
+    .filter(s => s.length > 0)))
+    .sort((a,b) => a.localeCompare(b, 'th', {sensitivity:'base'}));
+
+  const selected = new Set(FilterState.groups);
+
+  groupPop.innerHTML = `
+    <div class="max-h-80 overflow-auto space-y-2">
+      ${ options.length ? options.map(opt => `
+          <label class="flex items-center gap-2">
+            <input type="checkbox" value="${opt}" ${selected.has(opt) ? "checked" : ""}/>
+            <span>${opt}</span>
+          </label>
+        `).join("") : `<div class="text-stone-500">No groups</div>` }
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="groupCancel" class="px-2 py-1 rounded border">Cancel</button>
+        <button id="groupApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+      </div>
+    </div>
+  `;
+
+  // วางตำแหน่ง popover
+  groupPop.style.visibility = "hidden";
+  groupPop.style.display = "block";
+  const rect = anchorBtn.getBoundingClientRect();
+  const popW = groupPop.offsetWidth, popH = groupPop.offsetHeight, pad = 8;
+  let left = rect.right + window.scrollX - popW;
+  let top  = rect.bottom + window.scrollY + 6;
+  left = Math.max(window.scrollX + pad, Math.min(left, window.scrollX + window.innerWidth - popW - pad));
+  top  = Math.min(top,  window.scrollY + window.innerHeight - popH - pad);
+  groupPop.style.left = `${left}px`;
+  groupPop.style.top  = `${top}px`;
+  groupPop.style.visibility = "visible";
+
+  const close = (e) => {
+    if (!groupPop.contains(e.target) && e.target !== anchorBtn) {
+      groupPop.style.display = "none";
+      document.removeEventListener("click", close, true);
+      anchorBtn.classList.remove("is-open");
+    }
+  };
+  setTimeout(() => document.addEventListener("click", close, true), 0);
+
+  groupPop.querySelector("#groupCancel").onclick = () => { groupPop.style.display = "none"; };
+  groupPop.querySelector("#groupApply").onclick = () => {
+    const checks = groupPop.querySelectorAll('input[type="checkbox"]');
+    FilterState.groups.clear();
+    checks.forEach(ch => { if (ch.checked) FilterState.groups.add(ch.value); });
+    groupPop.style.display = "none";
+    applyFilters();
+  };
+}
+
+
+
+      /** ---------- Status popover ---------- **/
+      let popEl = null;
+      function openStatusFilter(anchorBtn) {
+        if (!popEl) {
+          popEl = document.createElement("div");
+          popEl.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+          popEl.style.minWidth = "180px";
+          document.body.appendChild(popEl);
+        }
+
+        const selected = new Set(FilterState.status);
+        const options = ["น้อยเกินไป", "ไม่ต้องสั่งซื้อ", "มากเกินไป"];
+
+        popEl.innerHTML = `
+          <div class="space-y-2">
+            ${options.map(opt => `
+              <label class="flex items-center gap-2">
+                <input type="checkbox" value="${opt}" ${selected.has(opt) ? "checked" : ""}/>
+                <span>${opt}</span>
+              </label>
+            `).join("")}
+            <div class="flex justify-end gap-2 pt-2">
+              <button id="fltCancel" class="px-2 py-1 rounded border">Cancel</button>
+              <button id="fltApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+            </div>
+          </div>
+        `;
+
+        popEl.style.visibility = "hidden";
+        popEl.style.display = "block";
+
+        const rect = anchorBtn.getBoundingClientRect();
+        const popW = popEl.offsetWidth;
+        const popH = popEl.offsetHeight;
+        const pad = 8;
+
+        let left = rect.right + window.scrollX - popW;
+        let top = rect.bottom + window.scrollY + 6;
+
+        const maxLeft = window.scrollX + window.innerWidth - popW - pad;
+        const minLeft = window.scrollX + pad;
+        left = Math.max(minLeft, Math.min(left, maxLeft));
+
+        const maxTop = window.scrollY + window.innerHeight - popH - pad;
+        top = Math.min(top, maxTop);
+
+        popEl.style.left = `${left}px`;
+        popEl.style.top = `${top}px`;
+        popEl.style.visibility = "visible";
+
+        const close = (e) => {
+          if (!popEl.contains(e.target) && e.target !== anchorBtn) {
+            popEl.style.display = "none";
+            document.removeEventListener("click", close, true);
+          }
+        };
+        setTimeout(() => document.addEventListener("click", close, true), 0);
+
+        popEl.querySelector("#fltCancel").onclick = () => { popEl.style.display = "none"; };
+        popEl.querySelector("#fltApply").onclick = () => {
+          const checks = popEl.querySelectorAll('input[type="checkbox"]');
+          FilterState.status.clear();
+          checks.forEach(ch => { if (ch.checked) FilterState.status.add(ch.value); });
+          popEl.style.display = "none";
+          applyFilters();
+        };
+      }
+
+      /** ---------- TurnOver popover ---------- **/
+      let turnoverPop = null;
+function openTurnoverFilter(anchorBtn) {
+  if (!turnoverPop) {
+    turnoverPop = document.createElement("div");
+    turnoverPop.className = "absolute bg-white border rounded shadow p-3 text-sm z-50";
+    // ✅ กันวูบ: ซ่อนไว้นอกจอตั้งแต่แรก + ไม่ให้คลิกโดน
+    turnoverPop.style.position = "fixed";
+    turnoverPop.style.left = "-9999px";
+    turnoverPop.style.top = "-9999px";
+    turnoverPop.style.opacity = "0";
+    turnoverPop.style.pointerEvents = "none";
+    turnoverPop.style.minWidth = "220px";
+    document.body.appendChild(turnoverPop);
+  }
+
+  const { min, max } = FilterState.turnoverRange || {};
+  turnoverPop.innerHTML = `
+    <div class="space-y-2">
+      <label class="flex items-center gap-2">
+        Min: <input type="number" id="toMin" class="border rounded px-1 w-24" value="${min ?? ""}">
+      </label>
+      <label class="flex items-center gap-2">
+        Max: <input type="number" id="toMax" class="border rounded px-1 w-24" value="${max ?? ""}">
+      </label>
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="toCancel" class="px-2 py-1 rounded border">Cancel</button>
+        <button id="toApply"  class="px-2 py-1 rounded bg-black text-white">Filter</button>
+      </div>
+    </div>
+  `;
+
+  // ✅ แสดงแบบไม่วูบ: คำนวณตำแหน่งด้วย rect (fixed ไม่ต้องบวก scroll)
+  const rect = anchorBtn.getBoundingClientRect();
+  // ให้ชิดขอบขวาของปุ่ม และอยู่ใต้ปุ่ม 6px
+  const pad = 8;
+  // ชั่วคราวเปิดให้วัดขนาด
+  turnoverPop.style.display = "block";
+  const popW = turnoverPop.offsetWidth;
+  const popH = turnoverPop.offsetHeight;
+
+  let left = rect.right - popW;
+  let top  = rect.bottom + 6;
+
+  // กันชนขอบจอ
+  left = Math.max(pad, Math.min(left, window.innerWidth  - popW - pad));
+  top  = Math.max(pad, Math.min(top,  window.innerHeight - popH - pad));
+
+  turnoverPop.style.left = `${left}px`;
+  turnoverPop.style.top  = `${top}px`;
+
+  // ✅ ค่อยทำให้มองเห็นและคลิกได้ หลังตั้งตำแหน่งเสร็จ
+  requestAnimationFrame(() => {
+    turnoverPop.style.opacity = "1";
+    turnoverPop.style.pointerEvents = "auto";
+  });
+
+  const close = (e) => {
+    if (!turnoverPop.contains(e.target) && e.target !== anchorBtn) {
+      // ซ่อนกลับแบบไม่วูบ
+      turnoverPop.style.opacity = "0";
+      turnoverPop.style.pointerEvents = "none";
+      turnoverPop.style.left = "-9999px";
+      turnoverPop.style.top  = "-9999px";
+      document.removeEventListener("click", close, true);
+    }
+  };
+  setTimeout(() => document.addEventListener("click", close, true), 0);
+
+  ['toMin','toMax'].forEach(id => {
+    const el = turnoverPop.querySelector(`#${id}`);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') turnoverPop.querySelector('#toApply').click(); });
+  });
+
+  turnoverPop.querySelector("#toCancel").onclick = () => {
+    // กดยกเลิกก็ซ่อนแบบไม่วูบ
+    turnoverPop.style.opacity = "0";
+    turnoverPop.style.pointerEvents = "none";
+    turnoverPop.style.left = "-9999px";
+    turnoverPop.style.top  = "-9999px";
+  };
+  turnoverPop.querySelector("#toApply").onclick = () => {
+    let vmin = parseFloat(document.getElementById("toMin").value);
+    let vmax = parseFloat(document.getElementById("toMax").value);
+    vmin = Number.isFinite(vmin) ? vmin : null;
+    vmax = Number.isFinite(vmax) ? vmax : null;
+    if (vmin !== null && vmax !== null && vmin > vmax) [vmin, vmax] = [vmax, vmin];
+    FilterState.turnoverRange = { min: vmin, max: vmax };
+
+    // ซ่อนหลัง apply
+    turnoverPop.style.opacity = "0";
+    turnoverPop.style.pointerEvents = "none";
+    turnoverPop.style.left = "-9999px";
+    turnoverPop.style.top  = "-9999px";
+
+    applyFilters();
+  };
+}
+
+      /** ---------- BIND ปุ่มกรองบนหัวตาราง ---------- **/
+      function initHeaderFilters() {
+        // Status
+        const btn = document.querySelector('th[data-sort-key="status"] .filter-btn');
+        if (btn) {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openStatusFilter(btn);
+          });
+        }
+
+        // SKU Number
+        const skuBtn = document.querySelector('th[data-sort-key="skuNumber"] .filter-btn-sku');
+        if (skuBtn) {
+          skuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openSkuFilter(skuBtn);
+          });
+        }
+
+        // Branch Code (คงที่)
+        const branchBtn = document.querySelector('th[data-sort-key="branchCode"] .filter-btn-branch');
+        if (branchBtn) {
+          branchBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openBranchFilter(branchBtn);
+          });
+        }
+
+        // TurnOver
+        const toBtn = document.querySelector('th[data-sort-key="turnOver"] .filter-btn-turnover');
+        if (toBtn) {
+          toBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openTurnoverFilter(toBtn);
+          });
+        }
+      }
+
+      // Brand
+const brandBtn = document.querySelector('th[data-sort-key="brandName"] .filter-btn-brand');
+if (brandBtn) {
+  brandBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openBrandFilter(brandBtn);
+  });
+}
+
+// Group
+const groupBtn = document.querySelector('th[data-sort-key="accGroupName"] .filter-btn-group');
+if (groupBtn) {
+  groupBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openGroupFilter(groupBtn);
+  });
+}
+
+
+      // เรียกเมื่อโหลดข้อมูลเสร็จครั้งแรก
+      document.addEventListener("DOMContentLoaded", () => {
+        initHeaderFilters();
+      });
+
+      // ====== Bind single date Apply/Reset + ล็อกไม่ให้เลือกวันในอนาคต ======
+      document.addEventListener("DOMContentLoaded", () => {
+        const sd = document.getElementById("singleDate");
+        const btnApply = document.getElementById("dateApply");
+        const btnReset = document.getElementById("dateReset");
+
+        // 🔒 ล็อกไม่ให้เลือกวันในอนาคต
+        if (sd) {
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, "0");
+          const dd = String(today.getDate()).padStart(2, "0");
+          sd.max = `${yyyy}-${mm}-${dd}`;
+        }
+
+        function parseDateInput(el) {
+          const v = (el?.value || "").trim();
+          if (!v) return null;
+          const d = new Date(v + "T00:00:00");
+          return Number.isFinite(d.getTime()) ? d : null;
+        }
+
+        btnApply?.addEventListener("click", () => {
+          FilterState.singleDate = parseDateInput(sd);
+          applyFilters();
+        });
+
+        btnReset?.addEventListener("click", () => {
+          if (sd) sd.value = "";
+          FilterState.singleDate = null;
+          applyFilters();
+        });
+
+        sd?.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") btnApply?.click();
+        });
+      });
+    </script>
+
+<script>
+  let avgSalesPopover = null;
+  let avgPopAnchor = null;
+  let avgPopUnbinds = [];
+
+  function closeAvgPopover() {
+    if (!avgSalesPopover) return;
+    avgSalesPopover.style.display = "none";
+    avgPopAnchor = null;
+    avgPopUnbinds.forEach(off => { try{ off(); }catch{} });
+    avgPopUnbinds = [];
+  }
+
+  function openAvgSalesPopover(anchorBtn, row) {
+    const salesArr = Array.isArray(row?.sales6) ? row.sales6 : [];
+    if (!avgSalesPopover) {
+      avgSalesPopover = document.createElement("div");
+      avgSalesPopover.className = "fixed bg-white border rounded shadow p-3 text-sm z-50";
+      avgSalesPopover.style.minWidth = "260px";
+      avgSalesPopover.style.maxHeight = "60vh";
+      avgSalesPopover.style.overflow = "auto";
+      document.body.appendChild(avgSalesPopover);
+    }
+
+    const rowsHtml = (salesArr||[]).map(x => `
+      <tr><td class="pr-4 py-0.5 text-stone-600 whitespace-nowrap">${x.month}</td>
+          <td class="text-right font-medium">${Number(x.qty||0)}</td></tr>`).join("");
+
+    const sum = (salesArr||[]).reduce((a,b)=>a+(Number(b.qty)||0),0);
+    const avg = salesArr.length ? Math.ceil(sum/salesArr.length) : 0;
+
+    avgSalesPopover.innerHTML = `
+      <div class="mb-2 font-semibold">ยอดขายย้อนหลัง 6 เดือน</div>
+      <div class="text-xs text-stone-600 mb-2">SKU: <span class="font-medium">${row?.skuNumber??""}</span></div>
+      <table class="w-full"><tbody>${rowsHtml||`<tr><td class="text-stone-500">No data</td></tr>`}</tbody>
+      ${rowsHtml?`<tfoot>
+        <tr><td class="pt-2 text-stone-600">รวม</td><td class="pt-2 text-right">${sum}</td></tr>
+        <tr><td class="text-stone-600">เฉลี่ย</td><td class="text-right">${avg}</td></tr>
+      </tfoot>`:""}</table>
+      <div class="mt-3 text-right"><button id="avgSalesClose" class="px-2 py-1 rounded border">Close</button></div>
+    `;
+
+    // วางครั้งแรกใต้ปุ่ม แล้ว "ปิด" เมื่อมีการเลื่อน
+    const rect = anchorBtn.getBoundingClientRect();
+    const pad  = 8;
+    const left = Math.max(pad, Math.min(rect.left, window.innerWidth - (avgSalesPopover.offsetWidth||260) - pad));
+    const top  = Math.min(rect.bottom + 6, window.innerHeight - (avgSalesPopover.offsetHeight||200) - pad);
+
+    avgSalesPopover.style.left = `${left}px`;
+    avgSalesPopover.style.top  = `${top}px`;
+    avgSalesPopover.style.display = "block";
+    avgPopAnchor = anchorBtn;
+
+    // ปิดเมื่อคลิกนอก
+    const onDocClick = (e) => {
+      if (!avgSalesPopover.contains(e.target) && e.target !== anchorBtn) closeAvgPopover();
+    };
+    document.addEventListener("click", onDocClick, true);
+    avgPopUnbinds.push(() => document.removeEventListener("click", onDocClick, true));
+
+    // ✅ ปิดเมื่อ scroll / resize
+    const onScroll = () => closeAvgPopover();
+    const onResize = () => closeAvgPopover();
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onResize);
+    avgPopUnbinds.push(() => window.removeEventListener("scroll", onScroll));
+    avgPopUnbinds.push(() => window.removeEventListener("resize", onResize));
+
+    // ✅ ปิดเมื่อเลื่อนภายในคอนเทนเนอร์ตาราง
+    const scrollHost = document.querySelector("section.overflow-auto, section.max-h\\[58vh\\].overflow-auto") || tableBody?.parentElement;
+    if (scrollHost) {
+      scrollHost.addEventListener("scroll", onScroll, { passive:true });
+      avgPopUnbinds.push(() => scrollHost.removeEventListener("scroll", onScroll));
+    }
+
+    // ✅ ปิดด้วย Esc
+    const onKey = (e) => { if (e.key === "Escape") closeAvgPopover(); };
+    document.addEventListener("keydown", onKey, true);
+    avgPopUnbinds.push(() => document.removeEventListener("keydown", onKey, true));
+
+    avgSalesPopover.querySelector("#avgSalesClose").onclick = closeAvgPopover;
+  }
+
+  // จับคลิกที่ Average Demand (ปุ่ม .avg-pop)
+  tableBody.addEventListener("click", (e) => {
+    const btn = e.target.closest(".avg-pop");
+    if (!btn) return;
+    const idx = Number(btn.dataset.idx);
+    const row = filtered[idx];
+    if (!row || !Array.isArray(row.sales6)) return;
+    // toggle
+    if (avgSalesPopover?.style.display === "block" && btn === avgPopAnchor) { closeAvgPopover(); return; }
+    openAvgSalesPopover(btn, row);
+  });
+</script>
+
+
+
+    <!-- ========= Footer / Pager controls ========= -->
+    <footer class="mt-6">
+      <div class="border border-black h-12 w-full flex items-center px-3 relative bg-white">
+        <!-- Left pagination -->
+        <div class="flex items-center gap-2">
+          <button id="prevBtn" class="bg-zinc-300 rounded px-3 py-1.5 text-xs">Previous</button>
+          <span id="pageButtons" class="flex items-center gap-2"></span>
+          <button id="nextBtn" class="bg-zinc-300 rounded px-3 py-1.5 text-xs">Next</button>
+        </div>
+
+        <!-- Right side status and GO box -->
+        <div class="ml-auto flex items-center gap-2">
+          <input id="goInput" type="number" min="1" class="rounded border border-stone-300 h-7 w-16 px-2 text-xs"
+            placeholder="Page" />
+          <button id="goBtn" class="bg-zinc-300 rounded h-7 px-3 grid place-items-center text-xs">GO</button>
+          <span id="statusText" class="text-xs text-stone-700"></span>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
