@@ -1,5 +1,5 @@
 // ---- Imports ----
-import cron from "node-cron";
+import cron from "node-cron"; //set scheduled tasks
 import express from "express";
 import cors from "cors";
 import path from "path";
